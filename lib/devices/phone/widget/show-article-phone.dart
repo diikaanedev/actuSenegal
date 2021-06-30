@@ -5,6 +5,10 @@ import 'package:actu/main.dart';
 import 'package:actu/models/article-model.dart';
 import 'package:actu/utils/colors-by-dii.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+// import 'package:flutter_share_me/flutter_share_me.dart';
+// import 'package:share_plus/share_plus.dart';
+import 'package:share_plus_web/share_plus_web.dart';
 
 showDialogArtilePhone({
   required BuildContext context,
@@ -14,6 +18,8 @@ showDialogArtilePhone({
   if (article.allFichier == null) {
     article.allFichier = [];
   }
+  String msg = 'hello,this is my github:https://github.com/lizhuoyuan';
+
   return showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -22,6 +28,23 @@ showDialogArtilePhone({
             insetPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
             elevation: 0,
             title: TitreTextLaptop(titre: article.titre),
+            actions: [
+              SizedBox(
+                width: size.width * .05,
+              ),
+              RaisedButton(
+                // color: colorPrimaire,
+                onPressed: () async {
+                  Share.share("je suis ici");
+
+                  // Navigator.of(context).pop();
+                },
+                child: Text(
+                  'Share',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
             content: Container(
               height: size.height * .9,
               width: size.width * 1.2,

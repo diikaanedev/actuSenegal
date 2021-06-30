@@ -16,14 +16,20 @@ import 'package:actu/utils/web-by-dii.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_carousel/carousel.dart';
+import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:http/http.dart' as http;
+// import 'package:share_plus/share_plus.dart';
+// import 'package:share_plus/share_plus.dart';
+// ignore: unused_import
+// import 'package:share_plus_web/share_plus_web.dart';
 
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:social_share/social_share.dart';
+// import 'package:social_share/social_share.dart';
+// import 'package:share_plus/share_plus.dart';
 
 class ReadArticleLaptop extends StatefulWidget {
   @override
@@ -36,6 +42,7 @@ class _ReadArticleLaptopState extends State<ReadArticleLaptop> {
   bool chargement = true;
   late Size size;
   var url = window.location.href;
+  String msg = 'hello,this is my github:https://github.com/lizhuoyuan';
 
   late Article article;
 
@@ -43,7 +50,7 @@ class _ReadArticleLaptopState extends State<ReadArticleLaptop> {
   void initState() {
     super.initState();
     if (url.split('/').last != '') {
-      WebByDii.get(url: 'post/${url.split('/').last}').then((response) {
+      WebByDii.get(url: 'posts/${url.split('/').last}').then((response) {
         var data = json.decode(response.body);
         setState(() {
           article = Article.fromJsonOne(data);
@@ -392,7 +399,9 @@ class _ReadArticleLaptopState extends State<ReadArticleLaptop> {
             RaisedButton(
               // color: colorPrimaire,
               onPressed: () {
-                SocialShare.shareWhatsapp("je suis un content");
+                FlutterShareMe()
+                    .shareToFacebook(msg: 'lsldld')
+                    .then((value) => print("here"));
                 // Navigator.of(context).pop();
               },
               child: Text(
