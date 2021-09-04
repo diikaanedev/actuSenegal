@@ -61,7 +61,7 @@ class _WidgetArticleLaptopState extends State<WidgetArticleLaptop> {
                           ),
                         )),
                     Positioned(
-                        bottom: constraints.maxHeight * .2,
+                        bottom: constraints.maxHeight * .25,
                         child: Container(
                           height: constraints.maxHeight * .12,
                           // color: colorPrimaire,

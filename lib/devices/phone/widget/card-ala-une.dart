@@ -20,7 +20,11 @@ class _CardArticleAlaUnePhoneState extends State<CardArticleAlaUnePhone> {
     size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
-        showDialogArtilePhone(article: widget.article, context: context);
+        // showDialogArtilePhone(article: widget.article, context: context);
+        appState.setState(() {
+          appState.article = widget.article;
+        });
+        Navigator.pushNamed(context, "/${appState.article.id}");
       },
       child: LayoutBuilder(builder: (context, constraint) {
         return Stack(

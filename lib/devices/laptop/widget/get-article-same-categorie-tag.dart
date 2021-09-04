@@ -11,6 +11,30 @@ getArticleSameCategorieTag({required Article article, Size? size}) {
       .reversed
       .toList();
 
+  listeArticle = listeArticle
+      .where((element) =>
+          element.categorie.toLowerCase() != 'Ênquete'.toLowerCase())
+      .toList();
+  listeArticle = listeArticle
+      .where((element) =>
+          element.categorie.toLowerCase() != 'Reportage'.toLowerCase())
+      .toList();
+
+  listeArticle = listeArticle
+      .where((element) =>
+          element.categorie.toLowerCase() != 'Scandales'.toLowerCase())
+      .toList();
+
+  listeArticle = listeArticle
+      .where((element) =>
+          element.categorie.toLowerCase() != 'Direct Actu221'.toLowerCase())
+      .toList();
+
+  listeArticle = listeArticle
+      .where((element) =>
+          element.categorie.toLowerCase() != 'Programme'.toLowerCase())
+      .toList();
+
   for (var item in listeArticle
       .where((element) => element.categorie != 'Breaking News')) {
     liste.add(Container(

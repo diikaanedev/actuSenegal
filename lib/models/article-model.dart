@@ -1,5 +1,7 @@
+import 'package:actu/utils/helper-by-dii.dart';
 import 'package:actu/utils/web-by-dii.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 class Article {
   late String id;
@@ -27,6 +29,8 @@ class Article {
 
   late List<String> allFichier;
 
+  late String date;
+
   Article(
       {required this.id,
       required this.titre,
@@ -40,6 +44,7 @@ class Article {
       required this.roleAuthor,
       required this.allFichier,
       required this.idCategorie,
+      required this.date,
       required this.keyWors});
 
   static fromJson(Map<dynamic, dynamic> l) {
@@ -51,6 +56,7 @@ class Article {
       for (var i in item['attributes']['mots']) {
         keyArticle.add(i['libelle']);
       }
+      // print(item['attributes']['libelle']);
 
       liste.add(Article(
           id: item['id'],
@@ -66,6 +72,9 @@ class Article {
               : int.parse(item['attributes']['position']),
           tag: item['attributes']['tag']['libelle'] ?? "",
           keyWors: keyArticle,
+          date: dateFormatter(
+            DateTime.parse(item['attributes']['created-at']),
+          ),
           allFichier: [],
           urlPhoto: BASE_URL_FILE + item['attributes']['photo']));
       keyArticle = [];
@@ -75,44 +84,23 @@ class Article {
 
   static fromJsonOne(Map<dynamic, dynamic> l) {
     Article article = Article(
-        id: '0',
-        titre: 'titre',
-        body: 'body',
-        isAlaUne: false,
-        positionUne: 1,
-        tag: "tag",
-        urlPhoto: 'urlPhoto',
-        categorie: 'categorie',
-        nameAuthor: 'nameAuthor',
-        roleAuthor: 'roleAuthor',
+        id: l['data']['id'],
+        titre: l['data']['attributes']['libelle'],
+        categorie: l['data']['attributes']['category']['libelle'],
+        idCategorie: l['data']['attributes']['category']['id'],
+        nameAuthor: l['data']['attributes']['author']['name'],
+        roleAuthor: l['data']['attributes']['author']['poste'],
+        body: l['data']['attributes']['description'],
+        isAlaUne: l['data']['attributes']['isUne'] == "1" ? true : false,
+        positionUne: l['data']['attributes']['position'] == null
+            ? 0
+            : int.parse(l['data']['attributes']['position']),
+        tag: l['data']['attributes']['tag']['libelle'],
+        date: "",
+        keyWors: [],
         allFichier: [],
-        idCategorie: 1,
-        keyWors: []);
-    for (var item in l['data']) {
-      // print(item['attributes']['mots'].length);
-      List<String> keyArticle = [];
-      // for (var i in item['attributes']['mots']) {
-      //   keyArticle.add(i['libelle']);
-      // }
+        urlPhoto: BASE_URL_FILE + l['data']['attributes']['photo']);
 
-      Article article = Article(
-          id: item['id'],
-          titre: item['attributes']['libelle'],
-          categorie: item['attributes']['category']['libelle'],
-          idCategorie: item['attributes']['category']['id'],
-          nameAuthor: item['attributes']['author']['name'],
-          roleAuthor: item['attributes']['author']['poste'],
-          body: item['attributes']['description'],
-          isAlaUne: item['attributes']['isUne'] == "1" ? true : false,
-          positionUne: item['attributes']['position'] == null
-              ? 0
-              : int.parse(item['attributes']['position']),
-          tag: item['attributes']['tag']['libelle'],
-          keyWors: keyArticle,
-          allFichier: [],
-          urlPhoto: BASE_URL_FILE + item['attributes']['photo']);
-      keyArticle = [];
-    }
     return article;
   }
 }

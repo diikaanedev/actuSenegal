@@ -2,6 +2,7 @@ import 'package:actu/devices/phone/screen/home-phone.dart';
 import 'package:actu/main.dart';
 import 'package:actu/utils/colors-by-dii.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 class RubriqueNewMenuBisPhone extends StatefulWidget {
   final String titre;
@@ -52,11 +53,42 @@ class _RubriqueNewMenuBisPhoneState extends State<RubriqueNewMenuBisPhone> {
               appState.titreCategorie = widget.titre;
               appState.screen = 1;
             });
+          } else if (widget.titre.toLowerCase() == 'reportage') {
+            showDialog(
+                context: context,
+                builder: (_) => new AlertDialog(
+                      content: new HtmlWidget(
+                        appState.listeReportages.first.body,
+                        webView: true,
+                        webViewJs: true,
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Fermer'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    ));
           } else {
-            appState.setState(() {
-              appState.titreCategorie = widget.titre;
-              appState.screen = 2;
-            });
+            showDialog(
+                context: context,
+                builder: (_) => new AlertDialog(
+                      content: new HtmlWidget(
+                        appState.listeDecouvertes.first.body,
+                        webView: true,
+                        webViewJs: true,
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text('Fermer'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        )
+                      ],
+                    ));
           }
           // appState.setState(() {
           //   appState.titre_categorie = widget.titre;

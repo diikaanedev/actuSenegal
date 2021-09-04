@@ -1,4 +1,5 @@
 import 'package:actu/devices/phone/widget/show-article-phone.dart';
+import 'package:actu/main.dart';
 import 'package:actu/models/article-model.dart';
 import 'package:actu/utils/colors-by-dii.dart';
 import 'package:flutter/material.dart';
@@ -22,16 +23,19 @@ class _CardArticleCategorieTabletBisState
     size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
-        showDialogArtilePhone(article: widget.article, context: context);
+        // showDialogArtilePhone(article: widget.article, context: context);
+        appState.setState(() {
+          appState.article = widget.article;
+        });
+        Navigator.pushNamed(context, "/${appState.article.id}");
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Stack(
+      child: LayoutBuilder(builder: (context, constraint) {
+        return Stack(
           children: [
             Card(
               child: Container(
-                height: size.height,
-                width: size.width * .4,
+                height: constraint.maxHeight,
+                width: constraint.maxWidth,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     image: DecorationImage(
@@ -40,11 +44,11 @@ class _CardArticleCategorieTabletBisState
               ),
             ),
             Positioned(
-                top: 15,
+                bottom: 15,
                 right: 15,
                 child: Container(
-                  height: 50,
-                  width: 100,
+                  height: constraint.maxHeight * .1,
+                  width: constraint.maxHeight * .1,
                   // color: colorPrimaire,
                   decoration: BoxDecoration(
                       image: DecorationImage(
@@ -52,34 +56,47 @@ class _CardArticleCategorieTabletBisState
                               AssetImage('assets/images/logo221_rouge.png'))),
                 )),
             Positioned(
-                bottom: 10,
-                // left: size.width * .05,
+                bottom: constraint.maxHeight * .0,
+                // left: constraint.maxWidth * .05,
                 child: Container(
-                  height: size.height * .07,
-                  width: size.width * .41,
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
+                  // height: constraint.maxHeight * .2,
+                  width: constraint.maxWidth,
+                  child: Column(
+                    children: [
+                      // Spacer(),
+                      SizedBox(
+                        height: constraint.maxHeight * .05,
+                      ),
+                      SizedBox(
+                        height: constraint.maxHeight * .05,
+                      ),
+                      Text(
                         widget.article.titre,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 12,
+                            fontSize: constraint.maxHeight * .05,
                             fontWeight: FontWeight.w400,
                             color: Colors.black),
                       ),
-                    ),
+                      SizedBox(
+                        height: constraint.maxHeight * .05,
+                      ),
+                      SizedBox(
+                        height: constraint.maxHeight * .05,
+                      ),
+                      // Spacer(),
+                    ],
                   ),
                   decoration: BoxDecoration(
                       color: Color.fromRGBO(255, 255, 255, 1),
                       borderRadius: BorderRadius.circular(5)),
                 )),
             Positioned(
-                left: size.width * .06,
-                bottom: size.height * .07,
+                // left: constraint.maxWidth * .06,
+                bottom: constraint.maxHeight * .3,
                 child: Container(
-                  // height: size.height * .03,
-                  // width: size.width * .3,
+                  // height: constraint.maxHeight * .03,
+                  // width: constraint.maxWidth * .3,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
@@ -95,8 +112,8 @@ class _CardArticleCategorieTabletBisState
                       borderRadius: BorderRadius.circular(2)),
                 ))
           ],
-        ),
-      ),
+        );
+      }),
     );
   }
 }

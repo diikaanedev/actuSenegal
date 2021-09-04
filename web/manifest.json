@@ -1,13 +1,13 @@
 {
-    "name": "actu",
+    "name": "Actu221",
     "short_name": "actu",
-    "start_url": ".",
+    "start_url": "",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "1er Groupe de Média Digital au Sénégal.",
     "orientation": "portrait-primary",
-    "prefer_related_applications": false,
+    "prefer_related_applications": true,
     "icons": [
         {
             "src": "icons/Icon-192.png",

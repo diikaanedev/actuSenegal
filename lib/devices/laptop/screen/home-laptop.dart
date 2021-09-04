@@ -4,12 +4,18 @@ import 'package:actu/devices/laptop/widget/acceuil-top-laptop.dart';
 import 'package:actu/devices/laptop/widget/accueil-actualite-laptop.dart';
 import 'package:actu/devices/laptop/widget/accueil-dossier-redaction-laptop.dart';
 import 'package:actu/devices/laptop/widget/breaking-news.dart';
+import 'package:actu/devices/laptop/widget/card-dialog-reportage.dart';
+import 'package:actu/devices/laptop/widget/card-dialog-tag-laptop.dart';
 import 'package:actu/devices/laptop/widget/card-scandale-decouverte-reportage-laptop.dart';
 import 'package:actu/devices/laptop/widget/card-voir-plus.dart';
 import 'package:actu/devices/laptop/widget/footer-laptop.dart';
+import 'package:actu/devices/laptop/widget/get-article-same-categorie-tag.dart';
 import 'package:actu/devices/laptop/widget/menu-item-laptop.dart';
 import 'package:actu/devices/laptop/widget/menu-top-laptop.dart';
 import 'package:actu/devices/laptop/widget/pub-widget-laptop.dart';
+import 'package:actu/devices/laptop/widget/read-other-programme.dart';
+import 'package:actu/devices/laptop/widget/read-reportage-dialog.dart';
+import 'package:actu/devices/laptop/widget/titre-text-laptop.dart';
 import 'package:actu/main.dart';
 import 'package:actu/models/article-model.dart';
 import 'package:actu/models/pub-actu.dart';
@@ -18,11 +24,14 @@ import 'package:actu/utils/web-by-dii.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_multi_carousel/carousel.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'dart:html' as html;
 import 'dart:js' as js;
 import 'dart:ui' as ui;
+import 'dart:ui' as reportage;
 
 late _HomeLaptopState homeLaptopState;
 
@@ -39,7 +48,6 @@ class _HomeLaptopState extends State<HomeLaptop> {
   bool showBreakingNews = false;
   bool chargement = true;
   late Size size;
-  String viewID = "your-view-id";
   @override
   void initState() {
     getPost();
@@ -49,11 +57,7 @@ class _HomeLaptopState extends State<HomeLaptop> {
     setState(() {
       chargement = true;
     });
-    FirebaseFirestore.instance.collection('publicite').get().then((value) {
-      appState.setState(() {
-        appState.listePub = PubActu.fromFireBase(value.docs);
-      });
-    });
+
     WebByDii.get(url: 'posts').then((response) {
       var data = json.decode(response.body);
       print('taille => ${data['data'].length}');
@@ -73,43 +77,43 @@ class _HomeLaptopState extends State<HomeLaptop> {
             .toList();
 
         appState.listePolitique = appState.listePost
-            .where((element) =>
-                element.categorie == 'Politique' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Politique')
             .toList();
         appState.listeRedaction = appState.listePost
-            .where((element) =>
-                element.categorie == 'Dossier de la Redaction' &&
-                !element.isAlaUne)
+            .where((element) => element.categorie == 'Dossier de la Redaction')
             .toList();
         appState.listeSport = appState.listePost
-            .where(
-                (element) => element.categorie == 'Sport' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Sport')
             .toList();
+        appState.listeEnquetes = appState.listePost
+            .where((element) => element.categorie == 'Ênquete')
+            .toList();
+
         appState.listeEconomie = appState.listePost
-            .where((element) =>
-                element.categorie == 'Economie' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Economie')
             .toList();
         appState.listeInternational = appState.listePost
-            .where((element) =>
-                element.categorie == 'International' && !element.isAlaUne)
+            .where((element) => element.categorie == 'International')
             .toList();
 
         appState.listeEntreprenariats = appState.listePost
-            .where((element) =>
-                element.categorie == 'Entreprenariat' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Entreprenariat')
             .toList();
         appState.listeBreakingNews = appState.listePost
-            .where((element) =>
-                element.categorie == 'Breaking News' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Breaking News')
             .toList();
         appState.listeRessourceDuSenegal = appState.listePost
-            .where((element) =>
-                element.categorie == 'Ressource du Senegal' &&
-                !element.isAlaUne)
+            .where((element) => element.categorie == 'Ressource du Senegal')
+            .toList();
+
+        appState.listeReportages = appState.listePost
+            .where((element) => element.categorie == 'Reportage')
+            .toList();
+
+        appState.listeProgrammes = appState.listePost
+            .where((element) => element.categorie == 'Programme')
             .toList();
       });
-
-      print(appState.listeInternational.length);
 
       setState(() {
         chargement = false;
@@ -120,15 +124,7 @@ class _HomeLaptopState extends State<HomeLaptop> {
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
-    // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-        viewID,
-        (int id) => html.IFrameElement()
-          ..width = MediaQuery.of(context).size.width.toString()
-          ..height = MediaQuery.of(context).size.height.toString()
-          ..src =
-              'https://firebasestorage.googleapis.com/v0/b/actu221.appspot.com/o/publi-reportage%2FCCBM%20%26%20LBA%20-%20HD.mp4?alt=media&token=154a5061-6f78-471b-89d2-f96caf32e789'
-          ..style.border = 'none');
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0.0,
@@ -164,8 +160,13 @@ class _HomeLaptopState extends State<HomeLaptop> {
                     : ListView(
                         physics: BouncingScrollPhysics(),
                         children: [
-                          SizedBox(
-                            height: 15,
+                          Container(
+                            height: size.height * .05,
+                            width: size.width,
+                            child: TitreTextLaptop(
+                              titre: 'À LA UNE',
+                              fontSize: 18,
+                            ),
                           ),
                           AcceuilTopLaptop(),
                           SizedBox(
@@ -185,7 +186,7 @@ class _HomeLaptopState extends State<HomeLaptop> {
                                         context: context,
                                         builder: (_) => new AlertDialog(
                                               content: new Text(
-                                                  "En cour de Dévéllopement"),
+                                                  "En cour de Développement"),
                                               actions: <Widget>[
                                                 FlatButton(
                                                   child: Text('Fermer'),
@@ -196,26 +197,49 @@ class _HomeLaptopState extends State<HomeLaptop> {
                                               ],
                                             ));
                                   },
-                                  child: CardScandaleDecouverteReportageLaptop(
-                                    titre: 'Découverte',
-                                    urlTof: appState
-                                        .listeDecouvertes.first.urlPhoto,
+                                  child: Container(
+                                    width: size.width * .2,
+                                    child:
+                                        CardScandaleDecouverteReportageLaptop(
+                                      titre: 'Découverte',
+                                      urlTof: appState
+                                          .listeDecouvertes.first.urlPhoto,
+                                    ),
                                   ),
                                 ),
-                                SizedBox(
-                                  width: size.width * .03,
+                                Spacer(),
+                                GestureDetector(
+                                  onTap: () {
+                                    readOtherProgramme(context,
+                                        appState.listeProgrammes.first);
+                                  },
+                                  child: Container(
+                                    width: size.width * .2,
+                                    child:
+                                        CardScandaleDecouverteReportageLaptop(
+                                      titre: 'Programmes',
+                                      urlTof:
+                                          'https://us.123rf.com/450wm/alexwhite/alexwhite1509/alexwhite150906240/45620260-replay-roter-kreis-gl%C3%A4nzend-web-symbol-runde-taste-mit-metallischen-rand.jpg?ver=6',
+                                    ),
+                                  ),
                                 ),
+                                Spacer(),
                                 GestureDetector(
                                   onTap: () {
                                     showDialog(
                                         context: context,
                                         builder: (_) => new AlertDialog(
-                                              content: Container(
-                                                height: size.height * .8,
-                                                width: size.width * .6,
-                                                child: HtmlElementView(
-                                                  viewType: viewID,
-                                                ),
+                                              content: HtmlWidget(
+                                                appState.listePost
+                                                    .where((element) =>
+                                                        element.categorie
+                                                            .toLowerCase() ==
+                                                        'Scandales'
+                                                            .toLowerCase())
+                                                    .first
+                                                    .body,
+                                                webView: true,
+                                                webViewJs: true,
                                               ),
                                               actions: <Widget>[
                                                 FlatButton(
@@ -227,62 +251,32 @@ class _HomeLaptopState extends State<HomeLaptop> {
                                               ],
                                             ));
                                   },
-                                  child: CardScandaleDecouverteReportageLaptop(
-                                    titre: 'Publi-reportage',
-                                    urlTof:
-                                        'https://firebasestorage.googleapis.com/v0/b/actu221.appspot.com/o/publi-reportage%2Fccbm.png?alt=media&token=2e26fd94-2f87-44ec-a39f-200d79d6c317',
+                                  child: Container(
+                                    width: size.width * .2,
+                                    child:
+                                        CardScandaleDecouverteReportageLaptop(
+                                      titre: 'RÉVÉLATION',
+                                      urlTof: appState.listePost
+                                          .where((element) =>
+                                              element.categorie.toLowerCase() ==
+                                              'Scandales'.toLowerCase())
+                                          .first
+                                          .urlPhoto,
+                                    ),
                                   ),
                                 ),
-                                SizedBox(
-                                  width: size.width * .03,
-                                ),
+                                Spacer(),
                                 GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (_) => new AlertDialog(
-                                              content: new Text(
-                                                  "En cour de traitement ..."),
-                                              actions: <Widget>[
-                                                FlatButton(
-                                                  child: Text('Fermer'),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                )
-                                              ],
-                                            ));
-                                  },
-                                  child: CardScandaleDecouverteReportageLaptop(
-                                    titre: 'Scandales',
-                                    urlTof:
-                                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlEWJ6WUGiSSyIMGIJQCA7QHs8B6BLns2SU2bZav0Wy8dE-8y-GVghZahZhjRQsFy1hFk&usqp=CAU',
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: size.width * .03,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (_) => new AlertDialog(
-                                              content: new Text(
-                                                  "En cour de Dévéllopement"),
-                                              actions: <Widget>[
-                                                FlatButton(
-                                                  child: Text('Fermer'),
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                )
-                                              ],
-                                            ));
-                                  },
-                                  child: CardScandaleDecouverteReportageLaptop(
-                                    titre: 'Reportages',
-                                    urlTof: appState
-                                        .listeEntreprenariats.first.urlPhoto,
+                                  onTap: () => readReportage(
+                                      context, appState.listeReportages.first),
+                                  child: Container(
+                                    width: size.width * .2,
+                                    child:
+                                        CardScandaleDecouverteReportageLaptop(
+                                      titre: 'Reportages',
+                                      urlTof: appState
+                                          .listeReportages.first.urlPhoto,
+                                    ),
                                   ),
                                 ),
                                 Spacer(),
@@ -320,23 +314,11 @@ class _HomeLaptopState extends State<HomeLaptop> {
                             height: 15,
                           ),
                           PubWidgetLaptop(
-                            pub: appState.listePub[0],
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          AcceuilDossierRedactionLaptop(),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          CardVoirPLus(
-                            categorie: 'Dossier de la Redaction'.toLowerCase(),
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          PubWidgetLaptop(
-                            pub: appState.listePub[1],
+                            url1:
+                                "https://firebasestorage.googleapis.com/v0/b/actu221.appspot.com/o/djamil-logistique%2Ffn-34.jpg?alt=media&token=98f2d2b6-73b3-4fe2-a44c-c9aede2748bb",
+                            url2:
+                                "https://lh3.googleusercontent.com/proxy/I2-w4H0MPYO5sndIRzsM433FhuZXqVtCdMn0N3o5NdtOfcIJNrjmh_dWBg4mGzkAGzUnPwSiUDE2pGocsxYCrFnO03OhpCjPCT30mmrwovgRmB-209WNnvE0OlL6ItSXCFI6IHNs",
+                            position: 0,
                           ),
                           SizedBox(
                             height: 15,
@@ -366,7 +348,11 @@ class _HomeLaptopState extends State<HomeLaptop> {
                             height: 15,
                           ),
                           PubWidgetLaptop(
-                            pub: appState.listePub[0],
+                            url1:
+                                "https://firebasestorage.googleapis.com/v0/b/actu221.appspot.com/o/djamil-logistique%2FSans%20titre-2.jpg?alt=media&token=d0f0c719-c132-435e-9039-eb339877b6cc",
+                            url2:
+                                "https://scontent.fdkr5-1.fna.fbcdn.net/v/t1.6435-9/131472174_1065969540515872_5663573011437526677_n.jpg?_nc_cat=101&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=2fhXsuPZs00AX8JAipu&_nc_ht=scontent.fdkr5-1.fna&oh=11709ddc908177823c7894bbc7d4e32e&oe=61419375",
+                            position: 1,
                           ),
                           SizedBox(
                             height: 15,
@@ -385,9 +371,9 @@ class _HomeLaptopState extends State<HomeLaptop> {
                           SizedBox(
                             height: 15,
                           ),
-                          PubWidgetLaptop(
-                            pub: appState.listePub[0],
-                          ),
+                          // PubWidgetLaptop(
+                          //   pub: appState.listePub[0],
+                          // ),
                           SizedBox(
                             height: 15,
                           ),
@@ -405,9 +391,19 @@ class _HomeLaptopState extends State<HomeLaptop> {
                           SizedBox(
                             height: 15,
                           ),
-                          PubWidgetLaptop(
-                            pub: appState.listePub[0],
+                          AcceuilDossierRedactionLaptop(),
+                          SizedBox(
+                            height: 15,
                           ),
+                          CardVoirPLus(
+                            categorie: 'Dossier de la Redaction'.toLowerCase(),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          // PubWidgetLaptop(
+                          //   pub: appState.listePub[0],
+                          // ),
                           SizedBox(
                             height: 15,
                           ),
@@ -425,9 +421,9 @@ class _HomeLaptopState extends State<HomeLaptop> {
                           SizedBox(
                             height: 15,
                           ),
-                          PubWidgetLaptop(
-                            pub: appState.listePub[0],
-                          ),
+                          // PubWidgetLaptop(
+                          //   pub: appState.listePub[0],
+                          // ),
                           SizedBox(
                             height: 15,
                           ),
@@ -561,41 +557,62 @@ class _HomeLaptopState extends State<HomeLaptop> {
                           ],
                         ),
                       ),
-                      AnimatedContainer(
-                        duration: Duration(seconds: 2),
-                        child: GestureDetector(
-                          onTap: () async {
-                            await launch(
-                                'https://www.youtube.com/channel/UC7Phmsh-eFFFz7wVWKwkJ0g');
-                          },
-                          child: Container(
-                            height: 100,
-                            width: 100,
-                            child: Column(
-                              children: [
-                                Spacer(),
-                                Container(
-                                  height: 50,
-                                  width: 100,
-                                  child:
-                                      Image.asset('assets/images/logo_tv.png'),
-                                ),
-                                Text(
-                                  'Nos Live',
-                                  style: TextStyle(
-                                      color: colorPrimaire,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                Spacer(),
-                              ],
-                            ),
-                            decoration: BoxDecoration(
-                              // color: _color,
-                              // color: colorPrimaire,
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (_) => new AlertDialog(
+                                    content: Container(
+                                      height: size.height * .8,
+                                      width: size.width * .6,
+                                      child: HtmlWidget(
+                                        appState.listePost
+                                            .where((element) =>
+                                                element.categorie
+                                                    .toLowerCase() ==
+                                                'Direct Actu221'.toLowerCase())
+                                            .first
+                                            .body,
+                                        webView: true,
+                                        webViewJs: true,
+                                      ),
+                                    ),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text('Fermer'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      )
+                                    ],
+                                  ));
+                        },
+                        child: Container(
+                          height: 100,
+                          width: 100,
+                          child: Column(
+                            children: [
+                              Spacer(),
+                              Container(
+                                height: 50,
+                                width: 100,
+                                child: Image.asset('assets/images/logo_tv.png'),
+                              ),
+                              Text(
+                                'Live',
+                                style: TextStyle(
+                                    color: colorPrimaire,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              Spacer(),
+                            ],
+                          ),
+                          decoration: BoxDecoration(
+                            // color: _color,
+                            // color: colorPrimaire,
 
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ),

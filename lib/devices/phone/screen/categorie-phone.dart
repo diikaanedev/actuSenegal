@@ -6,6 +6,7 @@ import 'package:actu/devices/phone/widget/card-categorie-recent.dart';
 import 'package:actu/devices/phone/widget/footer-phone.dart';
 import 'package:actu/devices/phone/widget/menu-top-phone.dart';
 import 'package:actu/main.dart';
+import 'package:actu/models/article-model.dart';
 import 'package:actu/utils/colors-by-dii.dart';
 import 'package:actu/utils/web-by-dii.dart';
 import 'package:flutter/material.dart';
@@ -151,132 +152,135 @@ class _CategoriePhoneState extends State<CategoriePhone> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
-                    ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // Container(
+                    //   height: size.height * .05,
+                    //   width: size.width,
+                    //   child: Row(
+                    //     children: [
+                    //       SizedBox(
+                    //         width: size.width * .05,
+                    //       ),
+                    //       Container(
+                    //         height: 15,
+                    //         width: 15,
+                    //         decoration: BoxDecoration(
+                    //             image: DecorationImage(
+                    //                 image: AssetImage(
+                    //                     'assets/images/icon_double_foward.png'))),
+                    //       ),
+                    //       SizedBox(
+                    //         width: 2,
+                    //       ),
+                    //       Text(
+                    //         'RÉCENT',
+                    //         style: TextStyle(
+                    //             fontSize: 20, fontWeight: FontWeight.bold),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
                     Container(
-                      height: size.height * .05,
+                      height: size.height,
                       width: size.width,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: size.width * .05,
-                          ),
-                          Container(
-                            height: 15,
-                            width: 15,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/icon_double_foward.png'))),
-                          ),
-                          SizedBox(
-                            width: 2,
-                          ),
-                          Text(
-                            'RÉCENT',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: size.height * .3,
-                      width: size.width,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        physics: BouncingScrollPhysics(),
+                      child: GridView.count(
+                        crossAxisCount: 1,
+                        mainAxisSpacing: 1,
+                        padding: const EdgeInsets.all(4.0),
+                        crossAxisSpacing: 4.0,
                         children: getListRecent(),
-                      ),
-                    ),
-                    Container(
-                      height: size.height * .05,
-                      width: size.width,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: size.width * .05,
-                          ),
-                          Container(
-                            height: 15,
-                            width: 15,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/icon_double_foward.png'))),
-                          ),
-                          SizedBox(
-                            width: 2,
-                          ),
-                          Text(
-                            'LES PLUS LUS',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: size.height * .3,
-                      width: size.width,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
                         physics: BouncingScrollPhysics(),
-                        children: getListLesPlusLu(),
                       ),
                     ),
-                    Container(
-                      height: size.height * .05,
-                      width: size.width,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: size.width * .05,
-                          ),
-                          Container(
-                            height: 15,
-                            width: 15,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage(
-                                        'assets/images/icon_double_foward.png'))),
-                          ),
-                          SizedBox(
-                            width: 2,
-                          ),
-                          Text(
-                            'LES AUTRES',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                    ),
-                    Container(
-                      height: size.height * .55,
-                      width: size.width,
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 12,
-                          ),
-                          Container(
-                            width: size.width - 12,
-                            height: size.height * .55,
-                            child: GridView.count(
-                              crossAxisCount: 2,
-                              childAspectRatio: 2,
-                              mainAxisSpacing: 12,
-                              padding: const EdgeInsets.all(4.0),
-                              crossAxisSpacing: 4.0,
-                              children: getListLesAutres(),
-                              physics: BouncingScrollPhysics(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   height: size.height * .05,
+                    //   width: size.width,
+                    //   child: Row(
+                    //     children: [
+                    //       SizedBox(
+                    //         width: size.width * .05,
+                    //       ),
+                    //       Container(
+                    //         height: 15,
+                    //         width: 15,
+                    //         decoration: BoxDecoration(
+                    //             image: DecorationImage(
+                    //                 image: AssetImage(
+                    //                     'assets/images/icon_double_foward.png'))),
+                    //       ),
+                    //       SizedBox(
+                    //         width: 2,
+                    //       ),
+                    //       Text(
+                    //         'LES PLUS LUS',
+                    //         style: TextStyle(
+                    //             fontSize: 20, fontWeight: FontWeight.bold),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
+                    // Container(
+                    //   height: size.height * .3,
+                    //   width: size.width,
+                    //   child: ListView(
+                    //     scrollDirection: Axis.horizontal,
+                    //     physics: BouncingScrollPhysics(),
+                    //     children: getListLesPlusLu(),
+                    //   ),
+                    // ),
+                    // Container(
+                    //   height: size.height * .05,
+                    //   width: size.width,
+                    //   child: Row(
+                    //     children: [
+                    //       SizedBox(
+                    //         width: size.width * .05,
+                    //       ),
+                    //       Container(
+                    //         height: 15,
+                    //         width: 15,
+                    //         decoration: BoxDecoration(
+                    //             image: DecorationImage(
+                    //                 image: AssetImage(
+                    //                     'assets/images/icon_double_foward.png'))),
+                    //       ),
+                    //       SizedBox(
+                    //         width: 2,
+                    //       ),
+                    //       Text(
+                    //         'LES AUTRES',
+                    //         style: TextStyle(
+                    //             fontSize: 20, fontWeight: FontWeight.bold),
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
+                    // Container(
+                    //   height: size.height * .55,
+                    //   width: size.width,
+                    //   child: Row(
+                    //     children: [
+                    //       SizedBox(
+                    //         width: 12,
+                    //       ),
+                    // Container(
+                    //   width: size.width - 12,
+                    //   height: size.height * .55,
+                    //   child: GridView.count(
+                    //     crossAxisCount: 2,
+                    //     childAspectRatio: 2,
+                    //     mainAxisSpacing: 12,
+                    //     padding: const EdgeInsets.all(4.0),
+                    //     crossAxisSpacing: 4.0,
+                    //     children: getListLesAutres(),
+                    //     physics: BouncingScrollPhysics(),
+                    //   ),
+                    // ),
+                    //     ],
+                    //   ),
+                    // ),
                     FooterPhone(),
                     SizedBox(
                       height: size.height * .1,
@@ -313,23 +317,42 @@ class _CategoriePhoneState extends State<CategoriePhone> {
   // }
 
   List<Widget> getListRecent() {
+    List<Widget> listes = [];
+
+    List<Article> listeArticle = appState.listePost
+        .where((element) => element.categorie == appState.titreCategorie)
+        .toList();
+
+    print(listeArticle.length);
+
+    listeArticle = listeArticle
+        .where((element) =>
+            element.categorie.toLowerCase() != 'Ênquete'.toLowerCase())
+        .toList();
+    listeArticle = listeArticle
+        .where((element) =>
+            element.categorie.toLowerCase() != 'Reportage'.toLowerCase())
+        .toList();
+
+    listeArticle = listeArticle
+        .where((element) =>
+            element.categorie.toLowerCase() != 'Scandales'.toLowerCase())
+        .toList();
+
+    listeArticle = listeArticle
+        .where((element) =>
+            element.categorie.toLowerCase() != 'Direct Actu221'.toLowerCase())
+        .toList();
+
+    print(listeArticle.length);
+
     List<Widget> liste = [];
-    if (appState.titreCategorie.toLowerCase() == 'actualites') {
-      for (var i = 0; i < 8; i++) {
-        liste.add(CardCategorieRecentPhone(
-          article: appState.listePost[i],
-        ));
-      }
-    } else {
-      for (var i = 0; i < 8; i++) {
-        liste.add(CardCategorieRecentPhone(
-          article: appState.listePost
-              .where((element) =>
-                  element.categorie.toLowerCase() ==
-                  appState.titreCategorie.toLowerCase())
-              .toList()[i],
-        ));
-      }
+    for (var item in listeArticle) {
+      liste.add(
+        CardCategorieLesPlusLustPhone(
+          article: item,
+        ),
+      );
     }
 
     return liste;

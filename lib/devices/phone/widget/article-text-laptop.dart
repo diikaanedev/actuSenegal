@@ -24,6 +24,8 @@ class _ArticeTextLaptopState extends State<ArticeTextLaptop> {
           padding: const EdgeInsets.all(8.0),
           child: HtmlWidget(
             widget.titre,
+            webView: true,
+            webViewJs: true,
             textStyle: TextStyle(fontWeight: FontWeight.w300),
           )),
     );

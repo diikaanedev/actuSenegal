@@ -1,4 +1,5 @@
 import 'package:actu/devices/phone/widget/show-article-phone.dart';
+import 'package:actu/main.dart';
 import 'package:actu/models/article-model.dart';
 import 'package:actu/utils/colors-by-dii.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,11 @@ class _CardCategorieRecentPhoneState extends State<CardCategorieRecentPhone> {
     size = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
-        showDialogArtilePhone(article: widget.article, context: context);
+        // showDialogArtilePhone(article: widget.article, context: context);
+        appState.setState(() {
+          appState.article = widget.article;
+        });
+        Navigator.pushNamed(context, "/${appState.article.id}");
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),

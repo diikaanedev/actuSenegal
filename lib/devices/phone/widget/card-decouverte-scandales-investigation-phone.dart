@@ -30,31 +30,14 @@ class _CardDecouverteScandaleInvestigationPhoneState
         Positioned(
           top: size.height * .04,
           child: Container(
-            height: size.height * .25,
+            height: size.height * .2,
             width: size.width * .75,
-            child: widget.titre == '#FreeSénégal'
-                ? Image.asset(
-                    widget.urlTof,
-                    fit: BoxFit.fill,
-                  )
-                : widget.titre == '#Sénégal'
-                    ? Image.asset(
-                        widget.urlTof,
-                        fit: BoxFit.fill,
-                      )
-                    : Image.network(
-                        widget.urlTof,
-                        fit: BoxFit.fill,
-                      ),
+            child: Image.network(
+              widget.urlTof,
+              fit: BoxFit.contain,
+            ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
-              // image: DecorationImage(
-              //     image: widget.titre == '#FreeSénégal'
-              //         ? AssetImage(widget.urlTof)
-              //         : widget.titre == '#Sénégal'
-              //             ? AssetImage(widget.urlTof)
-              //             : NetworkImage(widget.urlTof),
-              //     fit: BoxFit.fill)
             ),
           ),
         ),
@@ -69,12 +52,36 @@ class _CardDecouverteScandaleInvestigationPhoneState
                   child: Text(
                     '${widget.titre}',
                     style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w200,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
                         decoration: TextDecoration.none,
                         color: colorPrimaire),
                   ),
                 ))),
+        if (widget.titre.toLowerCase() == 'Reportage'.toLowerCase())
+          Positioned(
+              bottom: 0,
+              child: Container(
+                color: colorSecondaire,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: size.height * .01,
+                    ),
+                    Text(
+                      'Combat de Survie',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none,
+                          color: colorPrimaire),
+                    ),
+                    SizedBox(
+                      height: size.height * .01,
+                    ),
+                  ],
+                ),
+              ))
       ],
     );
   }

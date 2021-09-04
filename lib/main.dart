@@ -4,15 +4,14 @@ import 'package:actu/models/article-model.dart';
 import 'package:actu/models/pub-actu.dart';
 import 'package:actu/utils/get-type-device.dart';
 import 'package:actu/utils/type-devices.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
+// ignore: avoid_web_libraries_in_flutter
+import 'dart:html' as html;
 
 double width = window.physicalSize.width / window.devicePixelRatio;
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+void main() {
   runApp(MyApp());
 }
 
@@ -29,10 +28,11 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late DeviceType deviceType;
-  late List<Article> listePost;
+  late List<Article> listePost = [];
 
   Article article = Article(
-      id: 'v',
+      id: "v",
+      date: '',
       titre: '',
       body: '',
       isAlaUne: false,
@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
       nameAuthor: '',
       roleAuthor: '');
 
-  late List<Article> listeTopPage;
+  late List<Article> listeTopPage = [];
   late List<Article> listePolitique;
 
   late List<Article> listeDecouvertes;
@@ -58,9 +58,21 @@ class _MyAppState extends State<MyApp> {
   late List<Article> listeEntreprenariats;
   late List<Article> listeBreakingNews;
   late List<Article> listeRessourceDuSenegal;
+  late List<Article> listeEnquetes;
+  late List<Article> listeReportages;
+  late List<Article> listeProgrammes;
 
-  late List<PubActu> listePub;
-
+  late List<PubActu> listePub = [
+    PubActu(
+        url1:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBNNEc1oiJsPpbDIw2zvbJUOLaJCj_MESIMQ&usqp=CAU",
+        url2:
+            "https://firebasestorage.googleapis.com/v0/b/actu221.appspot.com/o/djamil-logistique%2Ftransport-et-logistique-1.jpg?alt=media&token=fb1a59e2-f812-48fc-83dc-4cdec32c369c",
+        urlSite: "www.google.com",
+        url3:
+            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBNNEc1oiJsPpbDIw2zvbJUOLaJCj_MESIMQ&usqp=CAU",
+        name: "google")
+  ];
   int screen = 0;
 
   String titreCategorie = 'Politique';

@@ -66,13 +66,14 @@ class _MenuTopPhoneState extends State<MenuTopPhone> {
                 height: size.height * .03,
               ),
               RubriqueNewMenuBisPhone(
-                titre: 'Entreprenariat',
-              ),
-              RubriqueNewMenuBisPhone(
                 titre: 'Decouverte',
               ),
+
               RubriqueNewMenuBisPhone(
                 titre: 'Investigation',
+              ),
+              RubriqueNewMenuBisPhone(
+                titre: 'Reportage',
               ),
             ],
           ),

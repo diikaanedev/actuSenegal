@@ -1,3 +1,4 @@
+import 'package:actu/devices/laptop/screen/read-article-laptop.dart';
 import 'package:actu/main.dart';
 import 'package:actu/models/article-model.dart';
 import 'package:actu/utils/colors-by-dii.dart';
@@ -22,7 +23,13 @@ class _CardNewUneLaptopState extends State<CardNewUneLaptop> {
         appState.setState(() {
           appState.article = widget.article;
         });
-        Navigator.pushNamed(context, '/${appState.article.id}');
+        Navigator.pushNamed(context, "/${appState.article.id}");
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //       fullscreenDialog: true,
+        //       builder: (context) => ReadArticleLaptop(),
+        //     ));
         // showDialogArtile(article: widget.article, context: context);
       },
       child: LayoutBuilder(builder: (context, constraint) {

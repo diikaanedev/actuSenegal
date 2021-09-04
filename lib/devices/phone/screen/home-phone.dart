@@ -2,16 +2,24 @@ import 'dart:convert';
 
 import 'package:actu/devices/phone/widget/card-ala-une.dart';
 import 'package:actu/devices/phone/widget/card-decouverte-scandales-investigation-phone.dart';
+import 'package:actu/devices/phone/widget/card-show-plus.dart';
 import 'package:actu/devices/phone/widget/card-titre-phone.dart';
 import 'package:actu/devices/phone/widget/footer-phone.dart';
 import 'package:actu/devices/phone/widget/menu-top-phone.dart';
 import 'package:actu/devices/phone/widget/pub-widget-phone.dart';
 import 'package:actu/main.dart';
 import 'package:actu/models/article-model.dart';
+import 'package:actu/models/pub-actu.dart';
 import 'package:actu/utils/colors-by-dii.dart';
 import 'package:actu/utils/web-by-dii.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'dart:html' as html;
+import 'dart:js' as js;
+import 'dart:ui' as ui;
+
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 late _HomePhoneState homePhoneState;
 
@@ -27,7 +35,7 @@ class _HomePhoneState extends State<HomePhone> {
   late Size size;
   bool isShowMenu = false;
   bool chargement = true;
-
+  String viewID = "publi-reportage";
   @override
   void initState() {
     super.initState();
@@ -37,6 +45,14 @@ class _HomePhoneState extends State<HomePhone> {
   getPost() async {
     setState(() {
       chargement = true;
+    });
+    await FirebaseFirestore.instance
+        .collection('publicite')
+        .get()
+        .then((value) {
+      appState.setState(() {
+        appState.listePub = PubActu.fromFireBase(value.docs);
+      });
     });
     WebByDii.get(url: 'posts').then((response) {
       var data = json.decode(response.body);
@@ -57,42 +73,42 @@ class _HomePhoneState extends State<HomePhone> {
             .toList();
 
         appState.listePolitique = appState.listePost
-            .where((element) =>
-                element.categorie == 'Politique' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Politique')
             .toList();
         appState.listeRedaction = appState.listePost
-            .where((element) =>
-                element.categorie == 'Redaction' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Dossier de la Redaction')
+            .toList();
+        appState.listeEnquetes = appState.listePost
+            .where((element) => element.categorie == 'Ênquete')
             .toList();
         appState.listeSport = appState.listePost
-            .where(
-                (element) => element.categorie == 'Sport' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Sport')
             .toList();
         appState.listeEconomie = appState.listePost
-            .where((element) =>
-                element.categorie == 'Economie' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Economie')
             .toList();
         appState.listeInternational = appState.listePost
-            .where((element) =>
-                element.categorie == 'International' && !element.isAlaUne)
+            .where((element) => element.categorie == 'International')
+            .toList();
+
+        appState.listeBreakingNews = appState.listePost
+            .where((element) => element.categorie == 'Breaking News')
             .toList();
 
         appState.listeEntreprenariats = appState.listePost
-            .where((element) =>
-                element.categorie == 'Entreprenariat' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Entreprenariat')
             .toList();
         appState.listeBreakingNews = appState.listePost
-            .where((element) =>
-                element.categorie == 'Breaking News' && !element.isAlaUne)
+            .where((element) => element.categorie == 'Breaking News')
             .toList();
         appState.listeRessourceDuSenegal = appState.listePost
-            .where((element) =>
-                element.categorie == 'Ressource du Senegal' &&
-                !element.isAlaUne)
+            .where((element) => element.categorie == 'Ressource du Senegal')
+            .toList();
+
+        appState.listeReportages = appState.listePost
+            .where((element) => element.categorie == 'Reportage')
             .toList();
       });
-
-      print(appState.listeRessourceDuSenegal.length);
 
       setState(() {
         chargement = false;
@@ -103,6 +119,7 @@ class _HomePhoneState extends State<HomePhone> {
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,
@@ -200,7 +217,7 @@ class _HomePhoneState extends State<HomePhone> {
                             height: size.height * .01,
                           ),
                           CardTitrePhone(
-                            titre: 'A la Une',
+                            titre: 'À LA UNE',
                           ),
                           Container(
                             height: size.height * .45,
@@ -253,8 +270,7 @@ class _HomePhoneState extends State<HomePhone> {
                             height: 10,
                           ),
                           PubWidgetPhone(
-                            url:
-                                'https://caractereconseil.com/assets/c_brands/candia/campagne_1/CANDIA_Sante-6a4a68d97ace7357f382b99038a8804e9caefe41898fdec5f04506e74d24ac7f.jpg',
+                            pub: appState.listePub.first,
                           ),
                           SizedBox(
                             height: 10,
@@ -270,8 +286,12 @@ class _HomePhoneState extends State<HomePhone> {
                                       showDialog(
                                           context: context,
                                           builder: (_) => new AlertDialog(
-                                                content: new Text(
-                                                    "En cour de Dévéllopement"),
+                                                content: new HtmlWidget(
+                                                  appState.listeDecouvertes
+                                                      .first.body,
+                                                  webView: true,
+                                                  webViewJs: true,
+                                                ),
                                                 actions: <Widget>[
                                                   FlatButton(
                                                     child: Text('Fermer'),
@@ -296,7 +316,7 @@ class _HomePhoneState extends State<HomePhone> {
                                           context: context,
                                           builder: (_) => new AlertDialog(
                                                 content: new Text(
-                                                    "En cour de Dévéllopement"),
+                                                    "Dans quelques instants ..."),
                                                 actions: <Widget>[
                                                   FlatButton(
                                                     child: Text('Fermer'),
@@ -310,8 +330,9 @@ class _HomePhoneState extends State<HomePhone> {
                                     },
                                     child:
                                         CardDecouverteScandaleInvestigationPhone(
-                                      titre: '#FreeSénégal',
-                                      urlTof: 'assets/images/FreeSenegal.jpg',
+                                      titre: 'Programmes',
+                                      urlTof:
+                                          'https://us.123rf.com/450wm/alexwhite/alexwhite1509/alexwhite150906240/45620260-replay-roter-kreis-gl%C3%A4nzend-web-symbol-runde-taste-mit-metallischen-rand.jpg?ver=6',
                                     ),
                                   ),
                                   GestureDetector(
@@ -319,8 +340,18 @@ class _HomePhoneState extends State<HomePhone> {
                                       showDialog(
                                           context: context,
                                           builder: (_) => new AlertDialog(
-                                                content: new Text(
-                                                    "En cour de Dévéllopement"),
+                                                content: HtmlWidget(
+                                                  appState.listePost
+                                                      .where((element) =>
+                                                          element.categorie
+                                                              .toLowerCase() ==
+                                                          'Scandales'
+                                                              .toLowerCase())
+                                                      .first
+                                                      .body,
+                                                  webView: true,
+                                                  webViewJs: true,
+                                                ),
                                                 actions: <Widget>[
                                                   FlatButton(
                                                     child: Text('Fermer'),
@@ -334,8 +365,13 @@ class _HomePhoneState extends State<HomePhone> {
                                     },
                                     child:
                                         CardDecouverteScandaleInvestigationPhone(
-                                      titre: '#Sénégal',
-                                      urlTof: 'assets/images/#senegal.jpg',
+                                      titre: 'RÉVÉLATION',
+                                      urlTof: appState.listePost
+                                          .where((element) =>
+                                              element.categorie.toLowerCase() ==
+                                              'Scandales'.toLowerCase())
+                                          .first
+                                          .urlPhoto,
                                     ),
                                   ),
                                   GestureDetector(
@@ -343,8 +379,18 @@ class _HomePhoneState extends State<HomePhone> {
                                       showDialog(
                                           context: context,
                                           builder: (_) => new AlertDialog(
-                                                content: new Text(
-                                                    "En cour de Dévéllopement"),
+                                                content: HtmlWidget(
+                                                  appState.listePost
+                                                      .where((element) =>
+                                                          element.categorie
+                                                              .toLowerCase() ==
+                                                          'Reportage'
+                                                              .toLowerCase())
+                                                      .first
+                                                      .body,
+                                                  webView: true,
+                                                  webViewJs: true,
+                                                ),
                                                 actions: <Widget>[
                                                   FlatButton(
                                                     child: Text('Fermer'),
@@ -358,9 +404,13 @@ class _HomePhoneState extends State<HomePhone> {
                                     },
                                     child:
                                         CardDecouverteScandaleInvestigationPhone(
-                                      titre: 'Reportage',
-                                      urlTof: appState
-                                          .listeEntreprenariats.first.urlPhoto,
+                                      titre: 'Reportages',
+                                      urlTof: appState.listePost
+                                          .where((element) =>
+                                              element.categorie.toLowerCase() ==
+                                              'Reportage'.toLowerCase())
+                                          .first
+                                          .urlPhoto,
                                     ),
                                   ),
                                 ],
@@ -376,8 +426,7 @@ class _HomePhoneState extends State<HomePhone> {
                             height: 10,
                           ),
                           PubWidgetPhone(
-                            url:
-                                'https://caractereconseil.com/assets/c_brands/bic/campagne_1/Bic-4x3-eng-boy-383854400b4cca17890e782a98786d04efcac1da20f6ded6f7252b93b9849281.jpg',
+                            pub: appState.listePub.first,
                           ),
                           SizedBox(
                             height: 10,
@@ -390,7 +439,13 @@ class _HomePhoneState extends State<HomePhone> {
                             width: size.width,
                             child: CarouselSlider(
                                 items: getListTitre(
-                                    articles: appState.listePolitique),
+                                    articles: appState.listePost
+                                        .where((element) =>
+                                            element.categorie.toLowerCase() ==
+                                            'Actualites'.toLowerCase())
+                                        .toList()
+                                        .sublist(0, 8),
+                                    categorie: "Actualites"),
                                 options: CarouselOptions(
                                   aspectRatio: .8,
                                   viewportFraction: .8,
@@ -400,32 +455,7 @@ class _HomePhoneState extends State<HomePhone> {
                             height: 10,
                           ),
                           PubWidgetPhone(
-                            url:
-                                'https://caractereconseil.com/assets/c_brands/jongue/campagne_1/4x3_Jongue-Tablette-4d70b1dc850eaa3cea45d8c65cdf79fda86e9f204bdc9fc0b6814d33af207410.jpg',
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          CardTitrePhone(
-                            titre: 'Dossier de la redaction',
-                          ),
-                          Container(
-                            height: size.height * .4,
-                            width: size.width,
-                            child: CarouselSlider(
-                                items: getListTitre(
-                                    articles: appState.listeRedaction),
-                                options: CarouselOptions(
-                                  aspectRatio: .8,
-                                  viewportFraction: .8,
-                                )),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          PubWidgetPhone(
-                            url:
-                                'https://caractereconseil.com/assets/c_brands/pressea/campagne2/image3-d3a338e61e0bc76e41770e784b450d5a4376ccd678f1daa9d0ff8a3c0f1c4e8c.jpg',
+                            pub: appState.listePub.first,
                           ),
                           SizedBox(
                             height: 10,
@@ -438,7 +468,9 @@ class _HomePhoneState extends State<HomePhone> {
                             width: size.width,
                             child: CarouselSlider(
                                 items: getListTitre(
-                                    articles: appState.listePolitique),
+                                    articles:
+                                        appState.listePolitique.sublist(0, 8),
+                                    categorie: "Politique"),
                                 options: CarouselOptions(
                                   aspectRatio: .8,
                                   onPageChanged: (index, reason) {},
@@ -451,8 +483,7 @@ class _HomePhoneState extends State<HomePhone> {
                             height: 10,
                           ),
                           PubWidgetPhone(
-                            url:
-                                'https://caractereconseil.com/assets/c_brands/pressea/campagne2/image3-d3a338e61e0bc76e41770e784b450d5a4376ccd678f1daa9d0ff8a3c0f1c4e8c.jpg',
+                            pub: appState.listePub.first,
                           ),
                           SizedBox(
                             height: 10,
@@ -465,7 +496,9 @@ class _HomePhoneState extends State<HomePhone> {
                             width: size.width,
                             child: CarouselSlider(
                                 items: getListTitre(
-                                    articles: appState.listeEconomie),
+                                    articles:
+                                        appState.listeEconomie.sublist(0, 8),
+                                    categorie: "Economie"),
                                 options: CarouselOptions(
                                   aspectRatio: .8,
                                   onPageChanged: (index, reason) {},
@@ -478,8 +511,7 @@ class _HomePhoneState extends State<HomePhone> {
                             height: 10,
                           ),
                           PubWidgetPhone(
-                            url:
-                                'https://caractereconseil.com/assets/c_brands/pressea/campagne2/image3-d3a338e61e0bc76e41770e784b450d5a4376ccd678f1daa9d0ff8a3c0f1c4e8c.jpg',
+                            pub: appState.listePub.first,
                           ),
                           SizedBox(
                             height: 10,
@@ -492,7 +524,9 @@ class _HomePhoneState extends State<HomePhone> {
                             width: size.width,
                             child: CarouselSlider(
                                 items: getListTitre(
-                                    articles: appState.listeInvestigations),
+                                    articles: appState.listeInvestigations
+                                        .sublist(0, 8),
+                                    categorie: "Investigations"),
                                 options: CarouselOptions(
                                   aspectRatio: .8,
                                   onPageChanged: (index, reason) {},
@@ -504,9 +538,27 @@ class _HomePhoneState extends State<HomePhone> {
                           SizedBox(
                             height: 10,
                           ),
+                          CardTitrePhone(
+                            titre: 'Dossier de la redaction',
+                          ),
+                          Container(
+                            height: size.height * .4,
+                            width: size.width,
+                            child: CarouselSlider(
+                                items: getListTitre(
+                                    articles:
+                                        appState.listeRedaction.sublist(0, 8),
+                                    categorie: "Dossier de la redaction"),
+                                options: CarouselOptions(
+                                  aspectRatio: .8,
+                                  viewportFraction: .8,
+                                )),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
                           PubWidgetPhone(
-                            url:
-                                'https://caractereconseil.com/assets/c_brands/pressea/campagne2/image3-d3a338e61e0bc76e41770e784b450d5a4376ccd678f1daa9d0ff8a3c0f1c4e8c.jpg',
+                            pub: appState.listePub.first,
                           ),
                           SizedBox(
                             height: 10,
@@ -519,7 +571,9 @@ class _HomePhoneState extends State<HomePhone> {
                             width: size.width,
                             child: CarouselSlider(
                                 items: getListTitre(
-                                    articles: appState.listeRessourceDuSenegal),
+                                    articles: appState.listeRessourceDuSenegal
+                                        .sublist(0, 8),
+                                    categorie: "Ressource du senegal"),
                                 options: CarouselOptions(
                                   aspectRatio: .8,
                                   onPageChanged: (index, reason) {},
@@ -532,8 +586,7 @@ class _HomePhoneState extends State<HomePhone> {
                             height: 10,
                           ),
                           PubWidgetPhone(
-                            url:
-                                'https://caractereconseil.com/assets/c_brands/pressea/campagne2/image3-d3a338e61e0bc76e41770e784b450d5a4376ccd678f1daa9d0ff8a3c0f1c4e8c.jpg',
+                            pub: appState.listePub.first,
                           ),
                           SizedBox(
                             height: 10,
@@ -546,7 +599,9 @@ class _HomePhoneState extends State<HomePhone> {
                             width: size.width,
                             child: CarouselSlider(
                                 items: getListTitre(
-                                    articles: appState.listeInternational),
+                                    articles: appState.listeInternational
+                                        .sublist(0, 8),
+                                    categorie: "International"),
                                 options: CarouselOptions(
                                   aspectRatio: .8,
                                   viewportFraction: .8,
@@ -556,8 +611,7 @@ class _HomePhoneState extends State<HomePhone> {
                             height: 10,
                           ),
                           PubWidgetPhone(
-                            url:
-                                'https://caractereconseil.com/assets/c_brands/candia/campagne_1/CANDIA_Sante-6a4a68d97ace7357f382b99038a8804e9caefe41898fdec5f04506e74d24ac7f.jpg',
+                            pub: appState.listePub.first,
                           ),
                           SizedBox(
                             height: 10,
@@ -569,8 +623,9 @@ class _HomePhoneState extends State<HomePhone> {
                             height: size.height * .4,
                             width: size.width,
                             child: CarouselSlider(
-                                items:
-                                    getListTitre(articles: appState.listeSport),
+                                items: getListTitre(
+                                    articles: appState.listeSport.sublist(0, 8),
+                                    categorie: "Sport"),
                                 options: CarouselOptions(
                                   aspectRatio: .8,
                                   viewportFraction: .8,
@@ -591,7 +646,92 @@ class _HomePhoneState extends State<HomePhone> {
                     width: size.width * .9,
                     child: MenuTopPhone(),
                   ))
-              : Container()
+              : Container(),
+          chargement
+              ? Container()
+              : Positioned(
+                  bottom: 0,
+                  child: Container(
+                    height: size.height * .07,
+                    width: size.width,
+                    child: CarouselSlider(
+                        items: appState.listeBreakingNews
+                            .map((e) => Container(
+                                  height: size.height * .07,
+                                  width: size.width,
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) => Stack(
+                                      children: [
+                                        Container(
+                                          height: constraints.maxHeight,
+                                          width: constraints.maxWidth,
+                                          // color: colorPrimaire,
+                                        ),
+                                        Positioned(
+                                            top: constraints.maxHeight * .37,
+                                            child: Container(
+                                              height:
+                                                  constraints.maxHeight * .63,
+                                              width: constraints.maxWidth,
+                                              color: Colors.grey[700],
+                                              child: Center(
+                                                child: Text(
+                                                  "    ${e.titre}    ",
+                                                  textAlign: TextAlign.center,
+                                                  // overflow:
+                                                  //     TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: constraints
+                                                              .maxHeight *
+                                                          .2,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                            )),
+                                        Positioned(
+                                            // left: constraints.maxWidth * .1,
+                                            child: Container(
+                                          height: constraints.maxHeight * .4,
+                                          color: colorPrimaire,
+                                          child: Column(
+                                            children: [
+                                              Spacer(),
+                                              Text(
+                                                "    ${e.tag.toUpperCase()}   ",
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize:
+                                                        constraints.maxHeight *
+                                                            .23,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Spacer()
+                                            ],
+                                          ),
+                                        )),
+                                      ],
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                        options: CarouselOptions(
+                          aspectRatio: 0.8,
+                          viewportFraction: 1.4,
+                          initialPage: 0,
+                          enableInfiniteScroll: true,
+                          reverse: false,
+                          autoPlay: true,
+                          autoPlayInterval: Duration(seconds: 4),
+                          autoPlayAnimationDuration:
+                              Duration(milliseconds: 500),
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          enlargeCenterPage: true,
+                          scrollDirection: Axis.horizontal,
+                        )),
+                  )),
         ],
       ),
     );
@@ -607,13 +747,17 @@ class _HomePhoneState extends State<HomePhone> {
     return liste;
   }
 
-  List<Widget> getListTitre({required List<Article> articles}) {
+  List<Widget> getListTitre(
+      {required List<Article> articles, required String categorie}) {
     List<Widget> liste = [];
     for (var item in articles) {
       liste.add(CardArticleAlaUnePhone(
         article: item,
       ));
     }
+    liste.add(CardShowPlus(
+      categorie: categorie,
+    ));
     return liste;
   }
 }

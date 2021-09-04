@@ -1,6 +1,7 @@
 import 'package:actu/devices/phone/widget/card-categorie-les-plus-lus-phone.dart';
 import 'package:actu/devices/phone/widget/menu-top-phone.dart';
 import 'package:actu/main.dart';
+import 'package:actu/models/article-model.dart';
 import 'package:actu/utils/colors-by-dii.dart';
 import 'package:flutter/material.dart';
 
@@ -172,24 +173,51 @@ class _TagCategoriePhoneState extends State<TagCategoriePhone> {
   List<Widget> getList() {
     List<Widget> listes = [];
 
-    print(appState.listePost
+    List<Article> listeArticle = appState.listePost
         .where((element) => element.tag == appState.titreCategorie)
-        .length);
+        .toList();
 
-    for (int i = 0;
-        i <
-            appState.listePost
-                .where((element) => element.tag == appState.titreCategorie)
-                .length;
-        i++) {
+    listeArticle = listeArticle
+        .where((element) =>
+            element.categorie.toLowerCase() != 'Ênquete'.toLowerCase())
+        .toList();
+    listeArticle = listeArticle
+        .where((element) =>
+            element.categorie.toLowerCase() != 'Reportage'.toLowerCase())
+        .toList();
+
+    listeArticle = listeArticle
+        .where((element) =>
+            element.categorie.toLowerCase() != 'Scandales'.toLowerCase())
+        .toList();
+
+    listeArticle = listeArticle
+        .where((element) =>
+            element.categorie.toLowerCase() != 'Direct Actu221'.toLowerCase())
+        .toList();
+
+    for (var item in listeArticle) {
       listes.add(
         CardCategorieLesPlusLustPhone(
-          article: appState.listePost
-              .where((element) => element.tag == appState.titreCategorie)
-              .toList()[i],
+          article: item,
         ),
       );
     }
+
+    // for (int i = 0;
+    //     i <
+    //         appState.listePost
+    //             .where((element) => element.tag == appState.titreCategorie)
+    //             .length;
+    //     i++) {
+    //   listes.add(
+    //     CardCategorieLesPlusLustPhone(
+    //       article: appState.listePost
+    //           .where((element) => element.tag == appState.titreCategorie)
+    //           .toList()[i],
+    //     ),
+    //   );
+    // }
 
     return listes;
   }

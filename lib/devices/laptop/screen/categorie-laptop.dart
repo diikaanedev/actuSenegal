@@ -5,6 +5,7 @@ import 'package:actu/devices/laptop/widget/menu-top-laptop.dart';
 import 'package:actu/main.dart';
 import 'package:actu/utils/colors-by-dii.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 late _CategorieLaptopState categorieLaptopState;
@@ -230,8 +231,34 @@ class _CategorieLaptopState extends State<CategorieLaptop> {
                         duration: Duration(seconds: 2),
                         child: GestureDetector(
                           onTap: () async {
-                            await launch(
-                                'https://www.youtube.com/channel/UC7Phmsh-eFFFz7wVWKwkJ0g');
+                            showDialog(
+                                context: context,
+                                builder: (_) => new AlertDialog(
+                                      content: Container(
+                                        height: size.height * .8,
+                                        width: size.width * .6,
+                                        child: HtmlWidget(
+                                          appState.listePost
+                                              .where((element) =>
+                                                  element.categorie
+                                                      .toLowerCase() ==
+                                                  'Direct Actu221'
+                                                      .toLowerCase())
+                                              .first
+                                              .body,
+                                          webView: true,
+                                          webViewJs: true,
+                                        ),
+                                      ),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          child: Text('Fermer'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        )
+                                      ],
+                                    ));
                           },
                           child: Container(
                             height: 100,
@@ -246,7 +273,7 @@ class _CategorieLaptopState extends State<CategorieLaptop> {
                                       Image.asset('assets/images/logo_tv.png'),
                                 ),
                                 Text(
-                                  'Nos Live',
+                                  'Live',
                                   style: TextStyle(
                                       color: colorPrimaire,
                                       fontSize: 12,
